@@ -5,21 +5,23 @@
 # Embedded file name: utils\base.py
 from loguru import logger
 import pprint
-pp = pprint.PrettyPrinter(depth=6)
-l1lll1111_wcplus_ = pp.pprint
 
-def l1ll1l1l1l1_wcplus_(file_name):
+pp = pprint.PrettyPrinter(depth=6)
+debug_p = pp.pprint
+
+
+def validate_file_name(file_name):
     """
     :param file_name:等待验证的文件名
     :return: 验证windows文件名的合法性 将不合法的字符替换为 下划线_
     """
     import re
-    l1ll1l11lll_wcplus_ = '[\\/\\\\\\:\\*\\?\\"\\<\\>\\|\\“\\”]'
-    l1ll1l1l11l_wcplus_ = re.sub(l1ll1l11lll_wcplus_, '_', file_name)
-    return l1ll1l1l11l_wcplus_
+    rstr = '[\\/\\\\\\:\\*\\?\\"\\<\\>\\|\\“\\”]'
+    new_file_name = re.sub(rstr, '_', file_name)
+    return new_file_name
 
 
-def l1ll1l1llll_wcplus_():
+def the_platform():
     from sys import platform
     if platform == 'linux' or platform == 'linux2':
         return 'linux'

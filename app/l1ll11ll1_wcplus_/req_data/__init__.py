@@ -14,13 +14,13 @@
 """
 import json
 from datetime import datetime
-from instance import l11l1l1ll1_wcplus_
+from instance import col_req_data
 
-class l1111_wcplus_:
+class ReqData:
 
     def __init__(self):
-        self.l1l11ll11_wcplus_ = []
-        self.l1l11ll1l_wcplus_ = []
+        self.req_data_list = []
+        self.wx_req_data_list = []
 
     def clean(self):
         """
@@ -29,9 +29,9 @@ class l1111_wcplus_:
         2. 基本格式转化
         3. 添加部分字段
         """
-        self.l1l11ll11_wcplus_ = []
-        l11l1l11l1_wcplus_ = l11l1l1ll1_wcplus_.get()
-        for rd in l11l1l11l1_wcplus_:
+        self.req_data_list = []
+        raw_data_list = col_req_data.get()
+        for rd in raw_data_list:
             item = {}
             item['key'] = rd['key']
             item['time'] = datetime.timestamp(rd['time'])
@@ -39,9 +39,9 @@ class l1111_wcplus_:
                 item['value'] = json.loads(rd['value'])
             else:
                 item['value'] = rd['value']
-            self.l1l11ll11_wcplus_.append(item)
+            self.req_data_list.append(item)
 
-    def l1ll11l1l_wcplus_(self):
+    def tidy(self):
         """
         :return: 分组 返回一个list 格式如下
         [
@@ -56,53 +56,53 @@ class l1111_wcplus_:
         """
         self.clean()
         nickname = 'UNK'
-        l1l11ll1l_wcplus_ = []
-        l11l1l11ll_wcplus_ = {}
-        for rd in self.l1l11ll11_wcplus_:
+        wx_req_data_list = []
+        wx_req_data_dict = {}
+        for rd in self.req_data_list:
             item = {}
             if rd['key'] == 'current_nickname':
                 nickname = rd['value']
             elif 'req' in rd['key']:
                 keys = rd['key'].split('.')
-                if keys[0] not in l11l1l11ll_wcplus_:
-                    l11l1l11ll_wcplus_[keys[0]] = {}
-                l11l1l11ll_wcplus_[keys[0]][keys[1]] = rd['value']
-                l11l1l11ll_wcplus_[keys[0]][keys[1]]['time'] = rd['time']
+                if keys[0] not in wx_req_data_dict:
+                    wx_req_data_dict[keys[0]] = {}
+                wx_req_data_dict[keys[0]][keys[1]] = rd['value']
+                wx_req_data_dict[keys[0]][keys[1]]['time'] = rd['time']
             elif 'nick_name' in rd['key']:
                 keys = rd['key'].split('.')
-                if rd['value'] not in l11l1l11ll_wcplus_:
-                    l11l1l11ll_wcplus_[rd['value']] = {}
-                l11l1l11ll_wcplus_[rd['value']]['nick_name'] = keys[0]
+                if rd['value'] not in wx_req_data_dict:
+                    wx_req_data_dict[rd['value']] = {}
+                wx_req_data_dict[rd['value']]['nick_name'] = keys[0]
 
-        for key in l11l1l11ll_wcplus_:
-            item = l11l1l11ll_wcplus_[key]
+        for key in wx_req_data_dict:
+            item = wx_req_data_dict[key]
             item['wxuin'] = key
             item['nickname'] = nickname
-            l1l11ll1l_wcplus_.append(item)
+            wx_req_data_list.append(item)
 
-        self.l1l11ll1l_wcplus_ = l1l11ll1l_wcplus_
-        return l1l11ll1l_wcplus_
+        self.wx_req_data_list = wx_req_data_list
+        return wx_req_data_list
 
-    def delete(self, l11l1l111l_wcplus_, a=False):
+    def delete(self, nick_name, a=False):
         """
         :param a: 是否需要删除公众号的昵称
         :param nick_name: 需要删除的微信昵称
         :return: 删除所有的参数
         """
-        if l11l1l111l_wcplus_ == '?':
+        if nick_name == '?':
             a = True
         if a:
-            l11l1l1ll1_wcplus_.delete()
+            col_req_data.delete()
             return
-        l11l1l1ll1_wcplus_.delete(key=l11l1l111l_wcplus_ + '.nick_name')
-        l11l11llll_wcplus_ = None
-        for l11l1l1111_wcplus_ in self.l1l11ll1l_wcplus_:
-            if l11l1l1111_wcplus_['nick_name'] == l11l1l111l_wcplus_:
-                l11l11llll_wcplus_ = l11l1l1111_wcplus_['wxuin']
+        col_req_data.delete(key=nick_name + '.nick_name')
+        wxuin = None
+        for wx in self.wx_req_data_list:
+            if wx['nick_name'] == nick_name:
+                wxuin = wx['wxuin']
                 break
 
-        if l11l11llll_wcplus_:
-            l11l1l1ll1_wcplus_.delete(key={'$regex': l11l11llll_wcplus_ + '.*'})
+        if wxuin:
+            col_req_data.delete(key={'$regex': wxuin + '.*'})
 
     def check(self):
         """

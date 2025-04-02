@@ -11,7 +11,7 @@
 """
 from cmp.db.es.search import l1lll11lll_wcplus_
 
-class l1ll111l1_wcplus_:
+class GZHSearch:
 
     def __init__(self, l1lll1l11l_wcplus_, l1l1l1lll_wcplus_='*', _1lll1l1l1_wcplus_=0, _1lll11ll1_wcplus_=10, fields=['title', 'article', 'digest']):
         """
@@ -35,13 +35,13 @@ class l1ll111l1_wcplus_:
         return s.search()
 
     @staticmethod
-    def l1l1l1ll1_wcplus_():
+    def get_all_index_info():
         """
         :return: 获取es中可用索引
         """
-        from app.search.index import l1l1lll1l_wcplus_
+        from app.search.index import GZHIndex
         from cmp.db.es.index import l1l1ll111_wcplus_
-        index_list = l1l1lll1l_wcplus_.l1llll1111_wcplus_('gzh_*')
+        index_list = GZHIndex.l1llll1111_wcplus_('gzh_*')
         l11l11lll_wcplus_ = []
         for index in index_list:
             l1lll1l111_wcplus_ = index.split('_')[-1]
@@ -52,5 +52,5 @@ class l1ll111l1_wcplus_:
 
 
 if __name__ == '__main__':
-    data = l1ll111l1_wcplus_.l1l1l1ll1_wcplus_()
+    data = GZHSearch.get_all_index_info()
     print(data)

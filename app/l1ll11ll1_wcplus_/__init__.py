@@ -38,7 +38,7 @@ class l1ll1ll1ll_wcplus_:
 
         if token['msg'] == 'req_data_error':
             self.pause = True
-            from utils.front import l1l111lll_wcplus_
-            l1l111lll_wcplus_('需要重新操作当前公众号 获取参数' + token['crawler'], '参数错误', 'error')
+            from utils.front import message_box
+            message_box('需要重新操作当前公众号 获取参数' + token['crawler'], '参数错误', 'error')
             while self.pause:
                 time.sleep(0.1)

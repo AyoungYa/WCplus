@@ -2,19 +2,20 @@
 # Python bytecode 3.6 (3379)
 # Decompiled from: Python 3.6.6 (default, Mar 29 2019, 00:03:27) 
 # [GCC 4.8.5 20150623 (Red Hat 4.8.5-36)]
-# Embedded file name: l1l11_wcplus_\api\settings.py
+# Embedded file name: l1l11_wcplus_\api\l11lll1l1_wcplus_.py
 from flask_restful import Resource, reqparse
-from instance import l1l1111ll_wcplus_
 parser = reqparse.RequestParser()
-arguments = ['proxy', 'use_proxy', 'article_list_delay', 'reading_data_delay', 'save_html']
+arguments = ['nickname', 'type', 'start', 'end']
 for arg in arguments:
     parser.add_argument(arg)
 
-class l11l111ll_wcplus_(Resource):
+class GZH(Resource):
 
     def get(self):
-        return l1l1111ll_wcplus_.get()
+        from app.api.gzh import Finished
+        return Finished().get()
 
-    def put(self):
+    def post(self):
         args = parser.parse_args()
-        l1l1111ll_wcplus_.insert(args)
+        from app.api.gzh import Finished
+        return Finished().get_article_list(args)

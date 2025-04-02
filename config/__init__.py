@@ -11,4 +11,4 @@ MONGODB_NAME = 'WCplus_dev'
 MONGODB_HOST = 'localhost'
 MONGODB_PORT = 27017
 l1ll1ll1l11_wcplus_ = './pdf/'
-l1ll1ll1l_wcplus_ = './excel/'
+EXCEL_OUTPUT_FOLDER = './excel/'

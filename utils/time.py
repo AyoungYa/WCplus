@@ -5,7 +5,7 @@
 # Embedded file name: utils\time.py
 
 
-def l1lll1l11ll_wcplus_():
+def get_internet_time():
     """
     :return: 获取百度服务器时间
     """
@@ -13,17 +13,17 @@ def l1lll1l11ll_wcplus_():
     try:
         r = requests.get(url='http://www.baidu.com')
         date = r.headers['Date']
-        l1lll1ll111_wcplus_ = time.mktime(datetime.datetime.strptime(date[5:25], '%d %b %Y %H:%M:%S').timetuple()) + 28800
-        return int(l1lll1ll111_wcplus_)
+        net_time = time.mktime(datetime.datetime.strptime(date[5:25], '%d %b %Y %H:%M:%S').timetuple()) + 28800
+        return int(net_time)
     except:
-        from instance import l1_wcplus_
-        if l1_wcplus_ == 'win':
+        from instance import PLATFORM
+        if PLATFORM == 'win':
             return
         import time
         return time.time()
 
 
 if __name__ == '__main__':
-    l1lll1ll111_wcplus_ = l1lll1l11ll_wcplus_()
-    if l1lll1ll111_wcplus_:
-        print(l1lll1ll111_wcplus_)
+    net_time = get_internet_time()
+    if net_time:
+        print(net_time)

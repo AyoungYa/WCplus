@@ -8,15 +8,15 @@
 """
 from mitmproxy import proxy, options
 from mitmproxy.tools.dump import DumpMaster
-from cmp.l111l_wcplus_.addons import l1lll111l1l_wcplus_
+from cmp.proxy_server.addons import SelfAddon
 
-def l11ll_wcplus_():
-    l1ll1llll11_wcplus_ = l1lll111l1l_wcplus_()
+def start_proxy():
+    self_addon = SelfAddon()
     opts = options.Options(listen_host='0.0.0.0', listen_port=8080)
-    l1ll1lll1ll_wcplus_ = proxy.config.ProxyConfig(opts)
+    pconf = proxy.config.ProxyConfig(opts)
     m = DumpMaster(opts)
-    m.server = proxy.server.ProxyServer(l1ll1lll1ll_wcplus_)
-    m.addons.add(l1ll1llll11_wcplus_)
+    m.server = proxy.server.ProxyServer(pconf)
+    m.addons.add(self_addon)
     try:
         m.run()
     except KeyboardInterrupt:
@@ -25,4 +25,4 @@ def l11ll_wcplus_():
 
 
 if __name__ == '__main__':
-    l11ll_wcplus_()
+    start_proxy()

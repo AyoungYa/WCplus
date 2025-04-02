@@ -6,7 +6,7 @@
 """
 websocket事件监听
 """
-from l1l11_wcplus_ import socketio
+from flask_server  import socketio
 
 @socketio.on('connect')
 def l1ll11111l1_wcplus_():
@@ -20,21 +20,21 @@ def l1l1lllllll_wcplus_(data):
 
 @socketio.on('pause')
 def l1ll111111l_wcplus_(data):
-    from instance import l11ll11lll_wcplus_
+    from instance import stop_and_start
     if data:
-        l11ll11lll_wcplus_.stop()
+        stop_and_start.stop()
     else:
-        l11ll11lll_wcplus_.start()
+        stop_and_start.start()
 
 
 @socketio.on('ask_data')
 def l1ll1111l11_wcplus_(data):
     if data == 'req_data':
-        from app.api.l1lll1_wcplus_ import l1111_wcplus_
-        l1111_wcplus_().send()
+        from app.api.crawler import ReqData
+        ReqData().send()
     try:
         import builtins
-        builtins.crawler_process.l11l1ll11_wcplus_()
+        builtins.crawler_process.send_process()
     except:
         pass
 
@@ -42,8 +42,8 @@ def l1ll1111l11_wcplus_(data):
 @socketio.on('export_excel')
 def l1ll11111ll_wcplus_(nickname):
     nickname = (nickname.encode(encoding='raw_unicode_escape')).decode('utf-8')
-    from app.export.excel import l111l1ll1_wcplus_
-    l111l1ll1_wcplus_(nickname).run()
+    from app.export.excel import ExportExcel
+    ExportExcel(nickname).run()
 
 
 @socketio.on('delete_gzh')

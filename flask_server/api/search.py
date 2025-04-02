@@ -10,14 +10,14 @@ arguments = [
 for arg in arguments:
     parser.add_argument(arg)
 
-class l1lll11lll_wcplus_(Resource):
+class Search(Resource):
 
     def get(self):
         """
         :return: 打开搜索页 返回可用的搜索信息
         """
-        from app.api.search import l11l11lll_wcplus_
-        return l11l11lll_wcplus_()
+        from app.api.search import index_info
+        return index_info()
 
     def post(self):
         """
@@ -43,12 +43,12 @@ class l1lll11lll_wcplus_(Resource):
             args['range'] = 'gzh_*'
         else:
             args['range'] = 'gzh_' + args['range']
-        from app.search.search import l1ll111l1_wcplus_
+        from app.search.search import GZHSearch
         try:
-            result = (l1ll111l1_wcplus_(l1lll1l11l_wcplus_=args['search_data'], l1l1l1lll_wcplus_=args['range'],
-              fields=args['fields'],
-              _1lll1l1l1_wcplus_=int(args['from']),
-              _1lll11ll1_wcplus_=int(args['size']))).get_result()
+            result = (GZHSearch(l1lll1l11l_wcplus_=args['search_data'], l1l1l1lll_wcplus_=args['range'],
+                                fields=args['fields'],
+                                _1lll1l1l1_wcplus_=int(args['from']),
+                                _1lll11ll1_wcplus_=int(args['size']))).get_result()
             return result
         except:
             from utils.base import logger

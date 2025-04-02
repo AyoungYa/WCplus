@@ -7,20 +7,22 @@
 一个命令对应该模块下的一份python文件
 注册时指定命令和处理模块
 """
-from app.command_handler.l111ll1ll_wcplus_ import l111ll1l1_wcplus_
-commands = {'index all gzh': l111ll1l1_wcplus_()}
+from app.command_handler.index_all_gzh import IndexAllGZH
+
+commands = {'index all gzh': IndexAllGZH()}
+
 
 def execute_command(command):
     """
     :param command:
     :return: 参数使用 ' - ' 间隔
     """
-    from utils.front import l1l11111l_wcplus_
+    from utils.front import notification
     cmd = command.split(' - ')[0]
-    l111llll1_wcplus_ = command.split(' - ')[1:]
+    cmd_args = command.split(' - ')[1:]
     if cmd not in commands:
-        l1l11111l_wcplus_(command, '不支持的命令', _type='error')
+        notification(command, '不支持的命令', _type='error')
     else:
-        l1l11111l_wcplus_(command, '开始执行', _type='success')
+        notification(command, '开始执行', _type='success')
         from threading import Thread
-        (Thread(target=commands[cmd].run, args=(cmd, l111llll1_wcplus_))).start()
+        (Thread(target=commands[cmd].run, args=(cmd, cmd_args))).start()

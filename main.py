@@ -7,30 +7,30 @@
 from threading import Thread
 from multiprocessing import Process
 import multiprocessing
-from l1l11_wcplus_ import l1ll1l_wcplus_
-from cmp.l111l_wcplus_ import l11ll_wcplus_
+from flask_server import run_webserver
+from cmp.l111l_wcplus_ import start_proxy
 import webbrowser, time
 
-def l111l_wcplus_():
+def proxy_server():
     """
     :return:
     """
-    l11ll_wcplus_()
+    start_proxy()
 
 
-def l1llll_wcplus_():
+def other_tasks():
     """
     :return: 
     """
-    from app.api.l1lll1_wcplus_ import l1111_wcplus_
+    from app.api.crawler import ReqData
     while True:
-        l1111_wcplus_().send()
+        ReqData().send()
         time.sleep(3)
 
 
 if __name__ == '__main__':
     multiprocessing.freeze_support()
-    Process(target=l111l_wcplus_).start()
-    Thread(target=l1llll_wcplus_).start()
+    Process(target=proxy_server).start()
+    Thread(target=other_tasks).start()
     webbrowser.open('http://localhost:5000')
-    l1ll1l_wcplus_()
+    run_webserver()

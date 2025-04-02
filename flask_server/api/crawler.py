@@ -9,16 +9,16 @@ arguments = ['range', 'type', 'num', 'start_time', 'end_time', 'nick_name', 'art
 for arg in arguments:
     parser.add_argument(arg)
 
-class l11lll1l1l_wcplus_(Resource):
+class Crawler(Resource):
 
     def get(self):
         pass
 
     def post(self):
-        from app.api.l1lll1_wcplus_ import l1l111l1l_wcplus_
+        from app.api.crawler import Begin2Crawl
         from threading import Thread
         args = parser.parse_args()
-        (Thread(target=l1l111l1l_wcplus_(args).l1l11l1ll_wcplus_)).start()
+        (Thread(target=Begin2Crawl(args).crawl)).start()
 
     def delete(self):
         from instance import rd

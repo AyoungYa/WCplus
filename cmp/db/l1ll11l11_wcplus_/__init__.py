@@ -6,9 +6,9 @@
 from pymongo import MongoClient
 from config import MONGODB_PORT, MONGODB_HOST, MONGODB_NAME
 l111111lll_wcplus_ = MongoClient(MONGODB_HOST, MONGODB_PORT)
-l11llllll_wcplus_ = l111111lll_wcplus_[MONGODB_NAME]
+db_instance = l111111lll_wcplus_[MONGODB_NAME]
 
-class l1l11llll_wcplus_:
+class CollectionOperation:
     """
     mongodb
     """
@@ -18,7 +18,7 @@ class l1l11llll_wcplus_:
         :param table: 实际上table在mongodb中被称为 collection 为了名称统一此处仍成为table
         table 的数据结果见data_scheme
         """
-        self.table = l11llllll_wcplus_[table]
+        self.table = db_instance[table]
 
     def count(self, **kwargs):
         """
@@ -116,5 +116,5 @@ class l1l11llll_wcplus_:
 if __name__ == '__main__':
     data = {'video_num':0, 
      'pic_num':8,  'comment_id':'643962374688604160',  'id':'6b6934a83fa4385ed4ec53f987e07b5f'}
-    col = l1l11llll_wcplus_('爱迪斯')
+    col = CollectionOperation('爱迪斯')
     col.insert('id', data)

@@ -6,10 +6,10 @@
 """
 提供数据设置API
 """
-from cmp.db.l1ll11l11_wcplus_ import l1l11llll_wcplus_
-l11l11ll1_wcplus_ = l1l11llll_wcplus_('settings')
+from cmp.db.l1ll11l11_wcplus_ import CollectionOperation
+col_settings = CollectionOperation('settings')
 
-class l11l111ll_wcplus_:
+class Settings:
 
     def __int__(self):
         pass
@@ -18,35 +18,35 @@ class l11l111ll_wcplus_:
         """
         :return: 获取所有的设置字段{}
         """
-        sd = l11l11ll1_wcplus_.get()
-        l11l11l11_wcplus_ = {}
+        sd = col_settings.get()
+        settings_data = {}
         for s in sd:
-            l11l11l11_wcplus_[s['key']] = s['value']
+            settings_data[s['key']] = s['value']
 
         from cmp.protect import Passport
-        from utils.network import l111lllll_wcplus_
-        l11l11l11_wcplus_['uuid'] = Passport.l11l111l1_wcplus_()
-        l11l11l1l_wcplus_ = Passport.l1l11l111_wcplus_()
-        if not l11l11l1l_wcplus_:
-            l11l11l11_wcplus_['passport'] = 0
+        from utils.network import get_ip
+        settings_data['uuid'] = Passport.get_uuid_first()
+        licenese_check = Passport.check_license()
+        if not licenese_check:
+            settings_data['passport'] = 0
         else:
-            l11l11l11_wcplus_['passport'] = l11l11l1l_wcplus_
-        l11l11l11_wcplus_['proxy_server'] = l111lllll_wcplus_()
-        return l11l11l11_wcplus_
+            settings_data['passport'] = licenese_check
+        settings_data['proxy_server'] = get_ip()
+        return settings_data
 
-    def insert(self, l11l1111l_wcplus_):
+    def insert(self, settings_data_dict):
         """
         :param settings_data_dict: settings数据本质上是一个字典
         :return: 插入或修改
         """
-        l11l11111_wcplus_ = []
-        for key in l11l1111l_wcplus_:
+        settings_data_list = []
+        for key in settings_data_dict:
             item = {}
             item['key'] = key
-            item['value'] = l11l1111l_wcplus_[key]
-            l11l11111_wcplus_.append(item)
+            item['value'] = settings_data_dict[key]
+            settings_data_list.append(item)
 
-        l11l11ll1_wcplus_.insert('key', l11l11111_wcplus_)
+        col_settings.insert('key', settings_data_list)
 
     def delete(self, key, all=False):
         """
@@ -55,6 +55,6 @@ class l11l111ll_wcplus_:
         :return:
         """
         if all:
-            l11l11ll1_wcplus_.delete()
+            col_settings.delete()
         else:
-            l11l11ll1_wcplus_.delete(key=key)
+            col_settings.delete(key=key)

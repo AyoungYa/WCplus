@@ -7,16 +7,17 @@
 阅读数据爬虫
 """
 import requests
-from utils.base import l1lll1111_wcplus_, logger
+from utils.base import debug_p, logger
 from copy import copy
 from datetime import datetime
-from utils.l11ll1111_wcplus_ import l11ll11ll1_wcplus_, l11l1ll1ll_wcplus_, l11ll111l1_wcplus_
+from utils.data_process import str_to_dict, dict_to_str, update_dict_by_dict
 import time
-from instance import l11ll11lll_wcplus_
+from instance import stop_and_start
 
-class l11lll1l1l_wcplus_:
 
-    def __init__(self, url, comment_id, l11lll1ll1_wcplus_):
+class Crawler:
+
+    def __init__(self, url, comment_id, wx_req_data):
         """
         :param url: 文章的url
         :param wx_req_data: 一个微信的全部请求参数 也就是 wx_req_data_list中的一个
@@ -26,45 +27,45 @@ class l11lll1l1l_wcplus_:
         self.res = {}
         self.url = url
         self.comment_id = comment_id
-        self.l11lll1ll1_wcplus_ = l11lll1ll1_wcplus_
+        self.wx_req_data = wx_req_data
         self.timeout = 20
         self.success = False
 
     @staticmethod
-    def l11l1lllll_wcplus_(l11l1lll11_wcplus_):
+    def rename_content_url_parm_name(url_parm_dict):
         """
         :param url_parm_dict:
         :return: 重命名微信文章链接参数名称
         """
-        l11l1lll1l_wcplus_ = {'__biz':'__biz', 
-         'mid':'mid', 
-         'idx':'idx', 
-         'scene':'scene', 
-         'sn':'sn', 
-         'appmsgid':'mid', 
-         'itemidx':'idx', 
-         'sign':'sn', 
-         'chksm':'chksm'}
-        l11ll11l1l_wcplus_ = copy(l11l1lll11_wcplus_)
-        for key in l11l1lll11_wcplus_:
-            l11ll11l1l_wcplus_[l11l1lll1l_wcplus_[key]] = l11ll11l1l_wcplus_.pop(key)
+        name_map = {'__biz': '__biz',
+                    'mid': 'mid',
+                    'idx': 'idx',
+                    'scene': 'scene',
+                    'sn': 'sn',
+                    'appmsgid': 'mid',
+                    'itemidx': 'idx',
+                    'sign': 'sn',
+                    'chksm': 'chksm'}
+        new_parm_dict = copy(url_parm_dict)
+        for key in url_parm_dict:
+            new_parm_dict[name_map[key]] = new_parm_dict.pop(key)
 
-        return l11ll11l1l_wcplus_
+        return new_parm_dict
 
-    def l11llll1ll_wcplus_(self):
+    def prepare_req_data(self):
         """
         :return: 根据url整理请求参数
         """
-        rd = self.l11lll1ll1_wcplus_['getappmsgext']
-        l11l1lll11_wcplus_ = l11ll11ll1_wcplus_(self.url.split('?')[1], '&', '=')
-        l11ll11111_wcplus_ = l11ll11ll1_wcplus_(rd['requestData'], '&', '=')
-        l11ll1111l_wcplus_ = self.l11l1lllll_wcplus_(l11l1lll11_wcplus_)
+        rd = self.wx_req_data['getappmsgext']
+        l11l1lll11_wcplus_ = str_to_dict(self.url.split('?')[1], '&', '=')
+        l11ll11111_wcplus_ = str_to_dict(rd['requestData'], '&', '=')
+        l11ll1111l_wcplus_ = self.rename_content_url_parm_name(l11l1lll11_wcplus_)
         l11ll11111_wcplus_['is_need_reward'] = 1
-        l11ll111l1_wcplus_(l11ll11111_wcplus_, l11ll1111l_wcplus_, ['mid', 'sn', 'idx', 'scene'])
+        update_dict_by_dict(l11ll11111_wcplus_, l11ll1111l_wcplus_, ['mid', 'sn', 'idx', 'scene'])
         l11ll11111_wcplus_['comment_id'] = self.comment_id
         l11ll11111_wcplus_['is_need_reward'] = 1
         self.req['url'] = rd['url']
-        self.req['body'] = l11l1ll1ll_wcplus_(l11ll11111_wcplus_)
+        self.req['body'] = dict_to_str(l11ll11111_wcplus_)
         self.req['headers'] = rd['requestOptions']['headers']
 
     def l1ll1ll11l_wcplus_(self):
@@ -79,10 +80,10 @@ class l11lll1l1l_wcplus_:
                 return 'error'
                 try:
                     resp = requests.post(url=self.req['url'],
-                      data=self.req['body'],
-                      headers=self.req['headers'],
-                      timeout=self.timeout,
-                      verify=True)
+                                         data=self.req['body'],
+                                         headers=self.req['headers'],
+                                         timeout=self.timeout,
+                                         verify=True)
                 except Exception as e:
                     l11lllll11_wcplus_ += 1
                     logger.warning('获取文章阅读数据发生错误 5秒钟之后再次尝试 %s %s' % (self.url, str(e)))
@@ -101,7 +102,7 @@ class l11lll1l1l_wcplus_:
             return
         l11llllll1_wcplus_ = resp.json()
         if 'appmsgstat' in l11llllll1_wcplus_:
-            l11ll11lll_wcplus_.check({'crawler':'阅读数据',  'msg':'success'})
+            stop_and_start.check({'crawler': '阅读数据', 'msg': 'success'})
             self.success = True
             return resp
         logger.error('请求阅读数据参数错误 %s' % self.url)
@@ -119,7 +120,7 @@ class l11lll1l1l_wcplus_:
         """
         :return: 运行所有的过程
         """
-        self.l11llll1ll_wcplus_()
+        self.prepare_req_data()
         resp = self.l1ll1l1lll_wcplus_(self.l1ll1ll11l_wcplus_())
         if self.success:
             read_data = self.l1ll1ll111_wcplus_(resp)
@@ -151,4 +152,5 @@ class l11ll111ll_wcplus_:
 
     @staticmethod
     def l11l1llll1_wcplus_(rd):
-        logger.info('采集阅读数据中... 阅读%-5d 点赞%-4d 赞赏%3d 评论%d' % (rd['read_num'], rd['like_num'], rd['reward_num'], rd['comment_num']))
+        logger.info('采集阅读数据中... 阅读%-5d 点赞%-4d 赞赏%3d 评论%d' % (
+        rd['read_num'], rd['like_num'], rd['reward_num'], rd['comment_num']))

@@ -6,9 +6,9 @@
 """
 页面路由
 """
-from l1l11_wcplus_ import l1ll11l11ll_wcplus_
+from flask_server  import l1ll11l11ll_wcplus_
 from flask import render_template, send_from_directory
-from instance import l1_wcplus_
+from instance import PLATFORM
 
 @l1ll11l11ll_wcplus_.route('/', methods=['GET'])
 def index():
@@ -34,11 +34,11 @@ def l1l1llll1ll_wcplus_(nickname, md5):
     :param filename:
     :return: 返回一个静动态文件
     """
-    from cmp.db.l1ll11l11_wcplus_ import l1l11llll_wcplus_
-    if l1l11llll_wcplus_(nickname).count(id=md5, comment_id={'$exists': True}):
+    from cmp.db.l1ll11l11_wcplus_ import CollectionOperation
+    if CollectionOperation(nickname).count(id=md5, comment_id={'$exists': True}):
         from webbrowser import open
         import os
-        if l1_wcplus_ == 'win':
+        if PLATFORM == 'win':
             file_name = os.getcwd() + '\\\\web_server\\\\static\\\\html\\\\' + nickname + '\\' + md5 + '.html'
             if os.path.isfile(file_name):
                 open(file_name)

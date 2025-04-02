@@ -4,8 +4,7 @@
 # [GCC 4.8.5 20150623 (Red Hat 4.8.5-36)]
 # Embedded file name: utils\l11ll1111_wcplus_.py
 
-
-def l11ll11ll1_wcplus_(s, l1ll1l1111l_wcplus_='\n', l1ll1l11l1l_wcplus_=':'):
+def str_to_dict(s, join_symbol='\n', split_symbol=':'):
     """
     字符串到字典 支持自定义键值间隔符和成员间隔符
     :param s: 原字符串
@@ -13,18 +12,18 @@ def l11ll11ll1_wcplus_(s, l1ll1l1111l_wcplus_='\n', l1ll1l11l1l_wcplus_=':'):
     :param split_symbol: 分隔符
     :return: 字典
     """
-    l1ll11lll1l_wcplus_ = s.split(l1ll1l1111l_wcplus_)
+    s_list = s.split(join_symbol)
     data = dict()
-    for item in l1ll11lll1l_wcplus_:
+    for item in s_list:
         item = item.strip()
         if item:
-            k, v = item.split(l1ll1l11l1l_wcplus_, 1)
+            k, v = item.split(split_symbol, 1)
             data[k] = v.strip()
 
     return data
 
 
-def l11l1ll1ll_wcplus_(data, l1ll1l1111l_wcplus_='&', l1ll1l11l1l_wcplus_='='):
+def dict_to_str(data, join_symbol='&', split_symbol='='):
     """
     :param data:dict数据
     :param join_symbol:不同成员之间的连接符
@@ -33,31 +32,32 @@ def l11l1ll1ll_wcplus_(data, l1ll1l1111l_wcplus_='&', l1ll1l11l1l_wcplus_='='):
     """
     s = ''
     for k in data:
-        s += str(k) + l1ll1l11l1l_wcplus_ + str(data[k]) + l1ll1l1111l_wcplus_
+        s += str(k) + split_symbol + str(data[k]) + join_symbol
 
     return s[:-1]
 
 
-def l11ll111l1_wcplus_(l1ll11lllll_wcplus_, l1ll1l11l11_wcplus_, keys=None):
+def update_dict_by_dict(whole_dict, part_dict, keys=None):
     """
     :param whole_dict:
     :param part_dict:
     :param keys:
     :return:根据指定的keys 用part_dict的value更新whole_dict的value
     """
-    if keys == None:
-        l1ll11lllll_wcplus_.update(l1ll1l11l11_wcplus_)
-        return l1ll11lllll_wcplus_
+    if keys is None:
+        whole_dict.update(part_dict)
+        return whole_dict
     for key in keys:
-        if key in l1ll1l11l11_wcplus_:
-            l1ll11lllll_wcplus_[key] = l1ll1l11l11_wcplus_[key]
+        if key in part_dict:
+            whole_dict[key] = part_dict[key]
 
-    return l1ll11lllll_wcplus_
+    return whole_dict
 
 
 import hashlib
 
-def l11llll11_wcplus_(data):
+
+def get_md5(data):
     """
     由于hash不处理unicode编码的字符串（python3默认字符串是unicode）
         所以这里判断是否字符串，如果是则进行转码
@@ -65,6 +65,6 @@ def l11llll11_wcplus_(data):
     """
     if isinstance(data, str):
         data = data.encode('utf-8')
-    l1ll11llll1_wcplus_ = hashlib.md5()
-    l1ll11llll1_wcplus_.update(data)
-    return l1ll11llll1_wcplus_.hexdigest()
+    md = hashlib.md5()
+    md.update(data)
+    return md.hexdigest()

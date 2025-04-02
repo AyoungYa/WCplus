@@ -23,13 +23,13 @@ d：数据写入es es根据id跳过已经存在的文档
 情况2 一个公众号的数据更新之后，需要准备索引数据的速度足够快 创建GZHIndex对象 调用index方法
 情况3 对于3.0 已经采集的数据建立索引 先将html文档解析成文本放入数据库 再调用 index方法
 """
-from cmp.db.l1ll11l11_wcplus_ import l1l11llll_wcplus_
+from cmp.db.l1ll11l11_wcplus_ import CollectionOperation
 from app.search.config import l1llll1lll_wcplus_
 from utils.base import logger
 from cmp.db.es.index import l1l1ll111_wcplus_
 import time
 
-class l1l1lll1l_wcplus_:
+class GZHIndex:
     l1llll11ll_wcplus_ = 'gzh_'
     doc_type = 'gzh_article'
 
@@ -58,7 +58,7 @@ class l1l1lll1l_wcplus_:
         """
         from pymongo import DESCENDING
         l1llll1l11_wcplus_ = []
-        col = l1l11llll_wcplus_(self.l1lll1lll1_wcplus_)
+        col = CollectionOperation(self.l1lll1lll1_wcplus_)
         if num:
             l11111l1l_wcplus_ = col.table.find().sort('p_date', DESCENDING)()[:num]
         else:
