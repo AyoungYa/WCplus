@@ -2,7 +2,7 @@
 # Python bytecode 3.6 (3379)
 # Decompiled from: Python 3.6.6 (default, Mar 29 2019, 00:03:27) 
 # [GCC 4.8.5 20150623 (Red Hat 4.8.5-36)]
-# Embedded file name: app\l1ll11ll1_wcplus_\article\__init__.py
+# Embedded file name: app\weixin_crawler\article\__init__.py
 """
 得到的请求参数全部的微信账号进行采集
 多线程爬取微信公众号文章正文
@@ -18,7 +18,7 @@ from requests.exceptions import SSLError, Timeout, ProxyError, ConnectionError
 import queue, time
 from cmp.proxy import get_proxy_ip
 from copy import copy
-from cmp.db.l1ll11l11_wcplus_ import CollectionOperation
+from cmp.db.mongo import CollectionOperation
 from utils.base import logger
 from utils.data_process import get_md5
 from instance import user_settings

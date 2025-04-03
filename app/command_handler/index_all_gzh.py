@@ -27,7 +27,7 @@ class IndexAllGZH:
             clean_gzhs = cmd_args
         for nickname in clean_gzhs:
             command_log('> 搜集文章正文 %s' % nickname)
-            from app.l1ll11ll1_wcplus_.article import get_all_article_by_nickname
+            from app.weixin_crawler.article import get_all_article_by_nickname
             get_all_article_by_nickname(nickname, worker_num=128)
             command_log('>> 创建索引 服务搜索 %s' % nickname)
             from app.api.crawler import index_gzh

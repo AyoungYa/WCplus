@@ -8,7 +8,7 @@
 """
 from instance import rd
 from utils.base import debug_p
-from flask_server import socketio
+from web_server import socketio
 from datetime import datetime
 import time
 
@@ -74,7 +74,7 @@ class Begin2Crawl:
         """
         :return: 根据数请求参数发起一次文章列表采集
         """
-        from app.l1ll11ll1_wcplus_.article_list import ArticleList
+        from app.weixin_crawler.article_list import ArticleList
         alc = ArticleList()
         alc.get_all_article_list(filter=self.filter, process=process)
 
@@ -82,7 +82,7 @@ class Begin2Crawl:
         """
         :return: 根据请求参数发起一次阅读数据采集
         """
-        from app.l1ll11ll1_wcplus_.l1ll1l1l1_wcplus_ import ReadingData
+        from app.weixin_crawler.reading_data import ReadingData
         rdc = ReadingData()
         rdc.get_all_reading_data(process, mov=mov)
 
@@ -97,7 +97,7 @@ class Begin2Crawl:
         else:
             worker_num = 8
         debug_p(worker_num)
-        from app.l1ll11ll1_wcplus_.article import get_all_article
+        from app.weixin_crawler.article import get_all_article
         get_all_article(worker_num=worker_num, process=process)
 
     @staticmethod

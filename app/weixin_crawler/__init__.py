@@ -2,14 +2,14 @@
 # Python bytecode 3.6 (3379)
 # Decompiled from: Python 3.6.6 (default, Mar 29 2019, 00:03:27) 
 # [GCC 4.8.5 20150623 (Red Hat 4.8.5-36)]
-# Embedded file name: app\l1ll11ll1_wcplus_\__init__.py
+# Embedded file name: app\weixin_crawler\__init__.py
 """
 管理所有的爬虫
 1. 利用rq对象统从数据源或请求参数 为了减少数据库操作的频率 缓存该数据
 """
 import time
 
-class l1ll1ll1ll_wcplus_:
+class Stop:
     """
     管理爬虫的暂停或启动 每种爬虫的最频繁动作都会调用它的某个方法
     该方法要么一直卡壳直到满足某种状态 要么直接放行

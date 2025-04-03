@@ -7,8 +7,8 @@
 from threading import Thread
 from multiprocessing import Process
 import multiprocessing
-from flask_server import run_webserver
-from cmp.l111l_wcplus_ import start_proxy
+from web_server import run_webserver
+from cmp.proxy_server import start_proxy
 import webbrowser, time
 
 def proxy_server():

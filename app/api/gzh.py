@@ -7,7 +7,7 @@
 为已经采集的公众号页面提供数据支持
 """
 from instance import col_crawler_log
-from cmp.db.l1ll11l11_wcplus_ import CollectionOperation
+from cmp.db.mongo import CollectionOperation
 from utils.base import debug_p
 from utils.data_process import get_md5
 

@@ -16,7 +16,7 @@ class DeleteGZH:
         self.nickname = nickname
 
     def delete_collection(self):
-        from cmp.db.l1ll11l11_wcplus_ import db_instance
+        from cmp.db.mongo import db_instance
         db_instance.drop_collection(self.nickname)
 
     def delete_crawler_log(self):

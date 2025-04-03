@@ -2,7 +2,7 @@
 # Python bytecode 3.6 (3379)
 # Decompiled from: Python 3.6.6 (default, Mar 29 2019, 00:03:27) 
 # [GCC 4.8.5 20150623 (Red Hat 4.8.5-36)]
-# Embedded file name: app\l1ll11ll1_wcplus_\l1ll1l1l1_wcplus_\l1lll1_wcplus_.py
+# Embedded file name: app\weixin_crawler\reading_data\l1lll1_wcplus_.py
 """
 阅读数据爬虫
 """
@@ -57,25 +57,25 @@ class Crawler:
         :return: 根据url整理请求参数
         """
         rd = self.wx_req_data['getappmsgext']
-        l11l1lll11_wcplus_ = str_to_dict(self.url.split('?')[1], '&', '=')
-        l11ll11111_wcplus_ = str_to_dict(rd['requestData'], '&', '=')
-        l11ll1111l_wcplus_ = self.rename_content_url_parm_name(l11l1lll11_wcplus_)
-        l11ll11111_wcplus_['is_need_reward'] = 1
-        update_dict_by_dict(l11ll11111_wcplus_, l11ll1111l_wcplus_, ['mid', 'sn', 'idx', 'scene'])
-        l11ll11111_wcplus_['comment_id'] = self.comment_id
-        l11ll11111_wcplus_['is_need_reward'] = 1
+        url_parm_dict = str_to_dict(self.url.split('?')[1], '&', '=')
+        body_dict = str_to_dict(rd['requestData'], '&', '=')
+        new_url_parm_dict = self.rename_content_url_parm_name(url_parm_dict)
+        body_dict['is_need_reward'] = 1
+        update_dict_by_dict(body_dict, new_url_parm_dict, ['mid', 'sn', 'idx', 'scene'])
+        body_dict['comment_id'] = self.comment_id
+        body_dict['is_need_reward'] = 1
         self.req['url'] = rd['url']
-        self.req['body'] = dict_to_str(l11ll11111_wcplus_)
+        self.req['body'] = dict_to_str(body_dict)
         self.req['headers'] = rd['requestOptions']['headers']
 
-    def l1ll1ll11l_wcplus_(self):
+    def act_request(self):
         """
         :return: 执行请求 如果请求失败返回字符串"error"
         """
         resp = None
-        l11lllll11_wcplus_ = 0
+        proxy_err_cnt = 0
         while not resp:
-            if l11lllll11_wcplus_ >= 3:
+            if proxy_err_cnt >= 3:
                 logger.warning('获取历史文章阅读数据发生错误%s 次数太多 放弃' % self.url)
                 return 'error'
                 try:
@@ -85,13 +85,13 @@ class Crawler:
                                          timeout=self.timeout,
                                          verify=True)
                 except Exception as e:
-                    l11lllll11_wcplus_ += 1
+                    proxy_err_cnt += 1
                     logger.warning('获取文章阅读数据发生错误 5秒钟之后再次尝试 %s %s' % (self.url, str(e)))
                     time.sleep(5)
 
         return resp
 
-    def l1ll1l1lll_wcplus_(self, resp):
+    def jude_request(self, resp):
         """
         :return: 判断请求是否成功 如果不成功 直接采集相关措施
         比如重新请求 或者操作手机获取参数
@@ -100,8 +100,8 @@ class Crawler:
             logger.error('请求失败, 未能获取到阅读数据')
             self.success = False
             return
-        l11llllll1_wcplus_ = resp.json()
-        if 'appmsgstat' in l11llllll1_wcplus_:
+        resp_json = resp.json()
+        if 'appmsgstat' in resp_json:
             stop_and_start.check({'crawler': '阅读数据', 'msg': 'success'})
             self.success = True
             return resp
@@ -109,11 +109,11 @@ class Crawler:
         self.success = False
         return
 
-    def l1ll1ll111_wcplus_(self, resp):
+    def decode_response(self, resp):
         """
         :return: 解析响应返回成为原始数据
         """
-        read_data = l11ll111ll_wcplus_.l11l1ll1l1_wcplus_(resp)
+        read_data = DecodeReadingData.decode_read_data(resp)
         return read_data
 
     def run(self):
@@ -121,22 +121,22 @@ class Crawler:
         :return: 运行所有的过程
         """
         self.prepare_req_data()
-        resp = self.l1ll1l1lll_wcplus_(self.l1ll1ll11l_wcplus_())
+        resp = self.jude_request(self.act_request())
         if self.success:
-            read_data = self.l1ll1ll111_wcplus_(resp)
+            read_data = self.decode_response(resp)
             return read_data
         return 'req_data_error'
 
 
-class l11ll111ll_wcplus_:
+class DecodeReadingData:
 
     @staticmethod
-    def l11l1ll1l1_wcplus_(response):
-        l11ll11l11_wcplus_ = response.json()
+    def decode_read_data(response):
+        rj = response.json()
         read_data = {}
-        read_data['read_num'] = l11ll11l11_wcplus_.get('appmsgstat').get('read_num')
-        read_data['like_num'] = l11ll11l11_wcplus_.get('appmsgstat').get('like_num')
-        read_data['reward_num'] = l11ll11l11_wcplus_.get('reward_total_count')
+        read_data['read_num'] = rj.get('appmsgstat').get('read_num')
+        read_data['like_num'] = rj.get('appmsgstat').get('like_num')
+        read_data['reward_num'] = rj.get('reward_total_count')
         if read_data['read_num'] is None:
             read_data['read_num'] = -2
         if read_data['like_num'] is None:
@@ -144,13 +144,13 @@ class l11ll111ll_wcplus_:
         if read_data['reward_num'] is None:
             read_data['reward_num'] = -2
         read_data['c_date'] = datetime.now()
-        read_data['comment_num'] = l11ll11l11_wcplus_.get('comment_count')
+        read_data['comment_num'] = rj.get('comment_count')
         if read_data['comment_num'] is None:
             read_data['comment_num'] = -2
-        l11ll111ll_wcplus_.l11l1llll1_wcplus_(read_data)
+        DecodeReadingData.print_log(read_data)
         return read_data
 
     @staticmethod
-    def l11l1llll1_wcplus_(rd):
+    def print_log(rd):
         logger.info('采集阅读数据中... 阅读%-5d 点赞%-4d 赞赏%3d 评论%d' % (
         rd['read_num'], rd['like_num'], rd['reward_num'], rd['comment_num']))

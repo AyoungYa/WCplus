@@ -6,20 +6,20 @@
 """
 websocket事件监听
 """
-from flask_server  import socketio
+from web_server import socketio
 
 @socketio.on('connect')
-def l1ll11111l1_wcplus_():
+def handle_message_connected():
     socketio.emit('connect', {'data': 'hand shake'})
 
 
 @socketio.on('hello')
-def l1l1lllllll_wcplus_(data):
+def handle_hello(data):
     print(data)
 
 
 @socketio.on('pause')
-def l1ll111111l_wcplus_(data):
+def handle_pause(data):
     from instance import stop_and_start
     if data:
         stop_and_start.stop()
@@ -28,7 +28,7 @@ def l1ll111111l_wcplus_(data):
 
 
 @socketio.on('ask_data')
-def l1ll1111l11_wcplus_(data):
+def handle_ask_data(data):
     if data == 'req_data':
         from app.api.crawler import ReqData
         ReqData().send()
@@ -40,21 +40,21 @@ def l1ll1111l11_wcplus_(data):
 
 
 @socketio.on('export_excel')
-def l1ll11111ll_wcplus_(nickname):
+def handle_export_excel(nickname):
     nickname = (nickname.encode(encoding='raw_unicode_escape')).decode('utf-8')
     from app.export.excel import ExportExcel
     ExportExcel(nickname).run()
 
 
 @socketio.on('delete_gzh')
-def l1l1llllll1_wcplus_(nickname):
+def handle_delete_gzh(nickname):
     nickname = (nickname.encode(encoding='raw_unicode_escape')).decode('utf-8')
     from app.api.delete import DeleteGZH
     DeleteGZH(nickname).run()
 
 
 @socketio.on('command')
-def l1l1lllll1l_wcplus_(command):
+def handle_command(command):
     command = (command.encode(encoding='raw_unicode_escape')).decode('utf-8')
     from app.command_handler import execute_command
     execute_command(command)

@@ -1,14 +1,12 @@
-# uncompyle6 version 3.2.6
-# Python bytecode 3.6 (3379)
-# Decompiled from: Python 3.6.6 (default, Mar 29 2019, 00:03:27) 
-# [GCC 4.8.5 20150623 (Red Hat 4.8.5-36)]
-# Embedded file name: cmp\db\l1ll11l11_wcplus_\__init__.py
+# mongodb
 from pymongo import MongoClient
 from config import MONGODB_PORT, MONGODB_HOST, MONGODB_NAME
-l111111lll_wcplus_ = MongoClient(MONGODB_HOST, MONGODB_PORT)
-db_instance = l111111lll_wcplus_[MONGODB_NAME]
 
-class CollectionOperation:
+db_client = MongoClient(MONGODB_HOST, MONGODB_PORT)
+db_instance = db_client[MONGODB_NAME]
+
+
+class CollectionOperation():
     """
     mongodb
     """
@@ -24,7 +22,7 @@ class CollectionOperation:
         """
         :return:返回符合条件数据的总数
         """
-        return self.table.find(kwargs).count()
+        return self.table.count_documents(kwargs)
 
     def delete(self, **kwargs):
         """
@@ -37,11 +35,12 @@ class CollectionOperation:
         """
         :param kwargs:
         :return: 返回符要求的数据生成器
+
         """
         data = self.table.find(kwargs)
         return data
 
-    def insert(self, key, data, l111111ll1_wcplus_=True):
+    def insert(self, key, data, check_exist=True):
         """
         :param data: []多个数据，或单个数据{}
         :param key: 更新模式下判重的依据
@@ -49,19 +48,23 @@ class CollectionOperation:
         :return: 插入一条数据或多个数据 在进行数据写入 基本上只需使用这一个API
         """
         res = 'INSERT'
-        if l111111ll1_wcplus_:
+        # 需要检查更新
+        if check_exist:
+            # 单个数据
             if type(data) == dict:
-                res = self._111111l11_wcplus_(key, data)
-            else:
-                if type(data) == list:
-                    res = self._11111l1l1_wcplus_(key, data)
-                else:
-                    if type(data) == dict:
-                        self._insert_one(data)
-                    else:
-                        if type(data) == list:
-                            self._11111l11l_wcplus_(data)
-                return res
+                res = self._update_one(key, data)
+            # 多个数据
+            elif type(data) == list:
+                res = self._update_many(key, data)
+        # 不用检查更新 速度会快一些
+        else:
+            # 单个数据
+            if type(data) == dict:
+                self._insert_one(data)
+            # 多个数据
+            elif type(data) == list:
+                self._insert_many(data)
+        return res
 
     def _insert_one(self, data):
         """
@@ -70,7 +73,7 @@ class CollectionOperation:
         """
         return self.table.insert_one(data).inserted_id
 
-    def _11111l11l_wcplus_(self, data):
+    def _insert_many(self, data):
         """
         :param data: []
         :return: 插入多条数据
@@ -78,22 +81,24 @@ class CollectionOperation:
         self.table.insert_many(data)
         return len(data)
 
-    def _111111l11_wcplus_(self, key, data):
+    def _update_one(self, key, data):
         """
         :param key: 判存字段
         :param data: {}
         :return: 更新或插入一条数据 用data中的字段更新key作为判断是否存在 存在更新 不存在就插入
         """
         result = self.table.find_one({key: data[key]})
+        # 数据存在可以更新
         if type(result) is dict:
-            self.table.update_one({key: data[key]}, {'$set': data})
+            self.table.update_one({key: data[key]}, {"$set": data})
             op_result = 'UPDATE'
+        # 数据不存在调用插入
         else:
             self._insert_one(data)
             op_result = 'INSERT'
         return op_result
 
-    def _11111l1l1_wcplus_(self, key, data):
+    def _update_many(self, key, data):
         """
         :param key: 判存字段
         :param data: []
@@ -101,20 +106,18 @@ class CollectionOperation:
         """
         res = 'INSERT'
         for d in data:
-            if self._111111l11_wcplus_(key, d) == 'UPDATE':
+            if self._update_one(key, d) == 'UPDATE':
                 res = 'UPDATE'
-
         return res
 
-    def l111111l1l_wcplus_(self):
+    def custom(self):
         """
         :return: 返回table 方便用户自定义操作
         """
         return self.table
 
 
-if __name__ == '__main__':
-    data = {'video_num':0, 
-     'pic_num':8,  'comment_id':'643962374688604160',  'id':'6b6934a83fa4385ed4ec53f987e07b5f'}
+if __name__ == "__main__":
+    data = {'video_num': 0, 'pic_num': 8, 'comment_id': '643962374688604160', 'id': '6b6934a83fa4385ed4ec53f987e07b5f'}
     col = CollectionOperation('爱迪斯')
     col.insert('id', data)

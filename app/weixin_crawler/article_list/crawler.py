@@ -2,7 +2,7 @@
 # Python bytecode 3.6 (3379)
 # Decompiled from: Python 3.6.6 (default, Mar 29 2019, 00:03:27) 
 # [GCC 4.8.5 20150623 (Red Hat 4.8.5-36)]
-# Embedded file name: app\l1ll11ll1_wcplus_\l1l1lllll_wcplus_\l1lll1_wcplus_.py
+# Embedded file name: app\weixin_crawler\l1l1lllll_wcplus_\l1lll1_wcplus_.py
 """
 历史文章列表爬虫 每次接到任务都新建一个对象 该对象负责处理所有的错误
 并不是每次请求都需要重新获取参数

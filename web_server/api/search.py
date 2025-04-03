@@ -45,10 +45,10 @@ class Search(Resource):
             args['range'] = 'gzh_' + args['range']
         from app.search.search import GZHSearch
         try:
-            result = (GZHSearch(l1lll1l11l_wcplus_=args['search_data'], l1l1l1lll_wcplus_=args['range'],
+            result = (GZHSearch(search_data=args['search_data'], gzhs=args['range'],
                                 fields=args['fields'],
-                                _1lll1l1l1_wcplus_=int(args['from']),
-                                _1lll11ll1_wcplus_=int(args['size']))).get_result()
+                                _from=int(args['from']),
+                                _size=int(args['size']))).get_result()
             return result
         except:
             from utils.base import logger

@@ -1,8 +1,3 @@
-# uncompyle6 version 3.2.6
-# Python bytecode 3.6 (3379)
-# Decompiled from: Python 3.6.6 (default, Mar 29 2019, 00:03:27) 
-# [GCC 4.8.5 20150623 (Red Hat 4.8.5-36)]
-# Embedded file name: cmp\db\es\search.py
 """
 作为搜索模块 应该提供哪些功能
 执行一次搜索创建一个对象
@@ -10,53 +5,57 @@
 import re
 from cmp.db.es.config import search_template
 from copy import deepcopy
-from cmp.db.es import l11l111ll1_wcplus_
+from cmp.db.es import es_instance
 from utils.base import logger, debug_p
 
-class l1lll11lll_wcplus_:
 
-    def __init__(self, l1lll1l11l_wcplus_, index_list, l1lll1l1ll_wcplus_={'from':0, 
- 'size':10}, fields=['title', 'article', 'author', 'digest', 'comments'], doc_type='gzh_article', source=None):
+class Search():
+    def __init__(self, search_data, index_list, from_size={"from":0,"size":10}, fields=['title', 'article', 'author', 'digest', 'comments'], doc_type='gzh_article', source=None):
         """
         :param index_list: 所需要搜搜的索引列表
         :param search_words: 搜索关键字 支持通配符
         """
         self.index_list = index_list
-        self.l1lll1l11l_wcplus_ = l1lll1l11l_wcplus_
+        self.search_data = search_data
         self.doc_type = doc_type
-        self.l111ll1ll1_wcplus_ = fields
-        self.l1lll1l1ll_wcplus_ = l1lll1l1ll_wcplus_
+        self.fileds = fields
+        self.from_size=from_size
         self.source = source
 
     def search(self):
         """
         :return: 执行搜索动作
         """
+        # 根据公众号的昵称
         indices = []
         st = deepcopy(search_template)
-        l111ll11l1_wcplus_ = self.l11l1111ll_wcplus_()
-        st.update(l111ll11l1_wcplus_)
+        dls = self.search_data_preprocess()
+        st.update(dls)
         if self.source != None:
-            st['_source'] = self.source
+            st["_source"] = self.source
+        # 添加搜索字段
+        # st['_source'] = self.fileds
+        # 更新from 和 size 支持分页
         try:
-            st['from'] = self.l1lll1l1ll_wcplus_['from']
-            st['size'] = self.l1lll1l1ll_wcplus_['size']
+            st["from"] = self.from_size["from"]
+            st["size"] = self.from_size["size"]
         except:
-            logger.warning('from_size字段错误 %s' % str(self.l1lll1l1ll_wcplus_))
-
+            logger.warning("from_size字段错误 %s"%(str(self.from_size)))
+        # 指定 搜索的索引范围
         if not self.index_list:
             indices = '*'
         else:
             indices = self.index_list
         try:
-            result = (l11l111ll1_wcplus_.search(index=indices, doc_type=self.doc_type, body=st))['hits']
+            result = es_instance.search(index=indices, body=st)['hits']
+            # result = es_instance.search(index=indices, doc_type=self.doc_type, body=st)['hits']
             return result
         except Exception as e:
             print(e)
-            logger.error('搜索错误 可能是有指定了不存在的搜索范围没有建立索引%s' % str(indices))
+            logger.error("搜索错误 可能是有指定了不存在的搜索范围没有建立索引%s"%(str(indices)))
             return False
 
-    def l11l1111ll_wcplus_(self):
+    def search_data_preprocess(self):
         """
         :return: 预处理搜索关键字 分理出其中的搜索模式
         :param search_data:
@@ -67,53 +66,76 @@ class l1lll11lll_wcplus_:
         举例："必须包含词"分词模式-time-1
         根据搜索数据中指定的规则返回查询的query、sort等字段数据
         """
-        l111ll11ll_wcplus_ = {'loc':'mov', 
-         'author':'author', 
-         'time':'p_date', 
-         'comm':'comments', 
-         'reward':'reward_num', 
-         'unk':'_score'}
-        l111ll1l11_wcplus_ = {'0':'asc', 
-         '1':'desc'}
-        if len(re.findall('-', self.l1lll1l11l_wcplus_)) == 2:
-            l111lll11l_wcplus_ = self.l1lll1l11l_wcplus_.split('-')
+        # 由于每种文章的index都不一样 该字典应该由 具体的应用提供
+        sort_mapping = {
+            "loc":"mov",            #文章发布位置
+            "author":"author",      #作者
+            "time":"p_date",        #发文时间
+            # "read":"read_num",      #阅读量
+            # "like":"like",          #点赞量
+            "comm":"comments",      #评论量
+            "reward":"reward_num",  #赞赏量
+            "unk":"_score",         #未知 就按照默认的分数排序
+        }
+        sort_dir_mapping = {
+            '0':"asc",
+            '1':"desc",
+        }
+        # 带有查询规则 分离搜索数据 排序字段和排序顺序
+        if len(re.findall('-',self.search_data))==2:
+            part_data = self.search_data.split('-')
             try:
-                l111llll11_wcplus_ = l111ll1l11_wcplus_[l111lll11l_wcplus_[-1]]
-                l11l1111l1_wcplus_ = l111ll11ll_wcplus_[l111lll11l_wcplus_[-2]]
+                sort_dir = sort_dir_mapping[part_data[-1]]
+                sort_field = sort_mapping[part_data[-2]]
             except:
-                l111llll11_wcplus_ = l111ll1l11_wcplus_['1']
-                l11l1111l1_wcplus_ = l111ll11ll_wcplus_['unk']
-
+                sort_dir = sort_dir_mapping['1']
+                sort_field = sort_mapping['unk']
+        # 普通查询
         else:
-            l111llll11_wcplus_ = l111ll1l11_wcplus_['1']
-            l11l1111l1_wcplus_ = l111ll11ll_wcplus_['unk']
-        l1lll1l11l_wcplus_ = self.l1lll1l11l_wcplus_.split('-')[0]
-        l11l111111_wcplus_ = [x.replace('"', '') for x in re.findall('"\\S*?"', l1lll1l11l_wcplus_)]
-        l111llll1l_wcplus_ = l1lll1l11l_wcplus_.replace('"', '')
-        for x in l11l111111_wcplus_:
-            l111llll1l_wcplus_ = l111llll1l_wcplus_.replace(x, '').replace(' ', '')
+            sort_dir = sort_dir_mapping['1']
+            sort_field = sort_mapping['unk']
+        search_data = self.search_data.split('-')[0]
+        # 找出必须完整包含的字段
+        data_match_phrase = [x.replace('"','') for x in re.findall(r'"\S*?"', search_data)]
+        data_match = search_data.replace('"','')
+        # 创建必须完整包含字段的Elsticsearch搜索描述数据
+        for x in data_match_phrase:
+            data_match = data_match.replace(x,'').replace(' ','')
+        query_value = {
+            "bool": {
+                "should": []
+            }
+        }
+        match_phrase_item = {
+            "match_phrase": {}
+        }
+        match_item = {
+            "match": {}
+        }
+        # 创建分词字段 英文不分词根据空格
+        for f in self.fileds:
+            if data_match != '':
+                should_item = deepcopy(match_item)
+                should_item["match"][f] = data_match
+                query_value["bool"]["should"].append(should_item)
 
-        l111llllll_wcplus_ = {'bool': {'should': []}}
-        l111lllll1_wcplus_ = {'match_phrase': {}}
-        l111ll1l1l_wcplus_ = {'match': {}}
-        for f in self.l111ll1ll1_wcplus_:
-            if l111llll1l_wcplus_ != '':
-                l111lll1l1_wcplus_ = deepcopy(l111ll1l1l_wcplus_)
-                l111lll1l1_wcplus_['match'][f] = l111llll1l_wcplus_
-                l111llllll_wcplus_['bool']['should'].append(l111lll1l1_wcplus_)
-            for item in l11l111111_wcplus_:
-                l111lll1l1_wcplus_ = deepcopy(l111lllll1_wcplus_)
-                l111lll1l1_wcplus_['match_phrase'][f] = item
-                l111llllll_wcplus_['bool']['should'].append(l111lll1l1_wcplus_)
+            for item in data_match_phrase:
+                should_item = deepcopy(match_phrase_item)
+                should_item["match_phrase"][f]=item
+                query_value["bool"]["should"].append(should_item)
 
-        l111lll111_wcplus_ = [
-         {l11l1111l1_wcplus_: {'order': l111llll11_wcplus_}}]
-        return {'query':l111llllll_wcplus_, 
-         'sort':l111lll111_wcplus_}
+        sort_value = [
+            {
+                sort_field: {
+                    "order": sort_dir
+                }
+            }
+        ]
+        return {"query":query_value,"sort":sort_value}
 
 
 if __name__ == '__main__':
     from utils.base import debug_p
-    s = l1lll11lll_wcplus_('教育', ['gzh_阿拉升学说'], 'gzh_article')
+    s = Search('教育', ['gzh_阿拉升学说'], 'gzh_article')
     data = s.search()
     debug_p(data)

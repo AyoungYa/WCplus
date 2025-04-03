@@ -101,7 +101,7 @@ class Process:
         """
         :return: 通过websocket发送数据
         """
-        from flask_server import socketio
+        from web_server import socketio
         socketio.emit('process', self.process)
 
     def send_finish(self):

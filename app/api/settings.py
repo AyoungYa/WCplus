@@ -6,7 +6,7 @@
 """
 提供数据设置API
 """
-from cmp.db.l1ll11l11_wcplus_ import CollectionOperation
+from cmp.db.mongo import CollectionOperation
 col_settings = CollectionOperation('settings')
 
 class Settings:

@@ -1,23 +1,18 @@
-# uncompyle6 version 3.2.6
-# Python bytecode 3.6 (3379)
-# Decompiled from: Python 3.6.6 (default, Mar 29 2019, 00:03:27) 
-# [GCC 4.8.5 20150623 (Red Hat 4.8.5-36)]
-# Embedded file name: cmp\db\l11l11ll11_wcplus_\__init__.py
-from cmp.db.l11l11ll11_wcplus_.l1111l1ll1_wcplus_ import l1lllllll11_wcplus_
+from cmp.db.sqlite.data_schema import sqlite_db
 from utils.base import logger
 
-class l1l11llll_wcplus_:
+
+class CollectionOperation():
     """
     提供sqllite的API
     使用时传入一个data_schema中的类即可
     正确的做法应该是使用sql语句操作 以后再来更新 接口
     详细文档见 http://docs.peewee-orm.com/en/latest/peewee/query_operators.html
     """
-
     def __init__(self, table):
         self.table = table
 
-    def count(self, key=None, value=None, _type=1):
+    def count(self, key=None,value=None, _type=1):
         """
         :param key: 来自Data中的某个属性
         :param value: 希望匹配概述性的值
@@ -25,9 +20,9 @@ class l1l11llll_wcplus_:
         :return:返回符合条件数据的总数
         """
         if _type == 1:
-            return self.table.select().where(getattr(self.table, key).contains(value)).count()
-        if _type == 2:
-            return self.table.select().where(getattr(self.table, key) == value).count()
+            return self.table.select().where(getattr(self.table,key).contains(value)).count()
+        elif _type == 2:
+            return self.table.select().where(getattr(self.table,key)==value).count()
 
     def delete(self, key=None, value=None, _type=1):
         """
@@ -35,15 +30,16 @@ class l1l11llll_wcplus_:
         :param value:
         :return: 删除符合条件的数据
         """
+        # 删除包含指定字符的数据
         if key:
             if _type == 1:
-                query = self.table.delete().where(getattr(self.table, key).contains(value))
-            else:
-                if _type == 2:
-                    query = self.table.delete().where(getattr(self.table, key) == value)
-                else:
-                    query = self.table.delete()
-                return query.execute()
+                query = self.table.delete().where(getattr(self.table,key).contains(value))
+            elif _type == 2:
+                query = self.table.delete().where(getattr(self.table,key)==value)
+        # 全部删除
+        else:
+            query = self.table.delete()
+        return query.execute()
 
     def get(self, key=None, value=None, _type=1):
         """
@@ -53,12 +49,15 @@ class l1l11llll_wcplus_:
         :return: 返回符合查询结果的数据
         """
         if key:
+            # 包含模式
             if _type == 1:
-                return self.table.select().where(getattr(self.table, key).contains(value))
-            if _type == 2:
-                return self.table.select().where(getattr(self.table, key) == value)
+                return self.table.select().where(getattr(self.table,key).contains(value))
+            # 相等模式
+            elif _type == 2:
+                return self.table.select().where(getattr(self.table,key)==value)
         else:
             return self.table.select()
+
 
     def insert(self, data):
         """
@@ -66,30 +65,40 @@ class l1l11llll_wcplus_:
         :return: 不存在插入 存在更新 同时支持单个数据和多个数据
         单个数据使用dict表示 多个数据使用list表示
         """
+        # 插入单个数据
         res = None
+        # 处理单个数据
         if type(data) is type({}):
-            exist = self.count('id', data['id'], _type=2)
+            # 根据id判断数据是否存在
+            exist = self.count('id',data['id'],_type=2)
+            # 数据不存在 插入
             if exist == 0:
                 self.table.create(**data)
-                res = 'INSERT'
+                res = "INSERT"
+            #  数据存在 更新
             else:
-                self.update('id', data['id'], data)
-                res = 'UPDATE'
+                self.update('id',data['id'],data)
+                res = "UPDATE"
             return res
-        if type(data) is type([]):
-            with l1lllllll11_wcplus_.atomic():
+        # 处理多个数据
+        elif type(data) is type([]):
+            with sqlite_db.atomic():
                 for d in data:
-                    exist = self.count('id', d['id'], _type=2)
+                    # 根据id判断数据是否存在
+                    exist = self.count('id',d['id'],_type=2)
+                    # 数据不存在 插入
                     if exist == 0:
                         self.table.create(**d)
-                        res = 'INSERT'
+                        res = "INSERT"
+                    # 数据存在 更新
                     else:
-                        self.update('id', d['id'], d)
-                        res = 'UPDATE'
-
+                        self.update('id',d['id'],d)
+                        res = "UPDATE"
             return res
-        logger.error('待插入的数据有误%s' % str(data))
-        return 'ERROR'
+
+        else:
+            logger.error("待插入的数据有误%s"%(str(data)))
+            return "ERROR"
 
     def update(self, key, value, data):
         """
@@ -98,15 +107,15 @@ class l1l11llll_wcplus_:
         :param data:
         :return: 更新一条数据
         """
-        query = (self.table.update(**data)).where(getattr(self.table, key) == value)
+        query = self.table.update(**data).where(getattr(self.table,key)==value)
         return query.execute()
 
-    def l111111l1l_wcplus_(self):
+    def custom(self):
         """
         :return: 返回table 方便用户自定义操作
         """
         return self.table
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pass

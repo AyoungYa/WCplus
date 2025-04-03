@@ -3,7 +3,7 @@
 # Decompiled from: Python 3.6.6 (default, Mar 29 2019, 00:03:27) 
 # [GCC 4.8.5 20150623 (Red Hat 4.8.5-36)]
 # Embedded file name: app\export\excel.py
-from cmp.db.l1ll11l11_wcplus_ import CollectionOperation
+from cmp.db.mongo import CollectionOperation
 import pandas as pd, os
 from config import EXCEL_OUTPUT_FOLDER
 

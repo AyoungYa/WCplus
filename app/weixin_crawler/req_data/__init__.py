@@ -2,7 +2,7 @@
 # Python bytecode 3.6 (3379)
 # Decompiled from: Python 3.6.6 (default, Mar 29 2019, 00:03:27) 
 # [GCC 4.8.5 20150623 (Red Hat 4.8.5-36)]
-# Embedded file name: app\l1ll11ll1_wcplus_\l1l1l1111_wcplus_\__init__.py
+# Embedded file name: app\weixin_crawler\l1l1l1111_wcplus_\__init__.py
 """
 管理请求参数 接受爬虫参数是否过期的指令 提供自动或手动更新参数的方法
 全局只有一个实例 参数既可以被动更新 在自动模式之下也可以定时更新
